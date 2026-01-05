@@ -18,148 +18,115 @@ float Fare[3] = {500.0, 600.0, 700.0};
 /* Function Declaration */
 void Register();
 void Login();
+void Profile();
 void Menu();
 void CheckBusDetails();
 void BookTicket();
 void CancelTicket();
 
-/* Menu Function */
+/* Main */
 int main() {
-    printf("\t\t****** BUS RESERVATION SYSTEM ******\n");
-    printf("\t\t_______________________________\n");
+    printf("\n\t****** BUS RESERVATION SYSTEM ******\n");
     Login();
     return 0;
 }
 
-/* Registration Function */
+/* Registration */
 void Register() {
-    printf("Enter name: ");
-    scanf("%s", reg_name);
+    printf("Enter Name: ");
+    scanf(" %29[^\n]", reg_name);
 
     printf("Enter Username: ");
-    scanf("%s", reg_username);
+    scanf("%49s", reg_username);
 
     printf("Enter Password: ");
-    scanf("%s", reg_password);
+    scanf("%39s", reg_password);
 
     Registered = 1;
-    printf("\nRegistration successful! Please login.\n");
+    printf("\nRegistration Successful! Please Login.\n");
 }
 
-/* Login Function */
+/* Login */
 void Login() {
     int choice;
-    char username[50];
-    char password[40];
+    char username[50], password[40];
 
-    printf("\n1. Register\n");
-    printf("2. Login\n");
-    printf("3. Exit\n");
-    printf("Please enter your choice: ");
-    scanf("%d", &choice);
-    printf("\n");
+    while (1) {
+        printf("\n1. Register\n2. Login\n3. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
 
-    if (choice == 1) {
-        Register();
-        Login();
-    } else if (choice == 2) {
-        if (!Registered) {
-            printf("Please register first!\n");
-            Login();
-            return;
+        if (choice == 1) {
+            Register();
         }
+        else if (choice == 2) {
+            if (!Registered) {
+                printf("Please register first!\n");
+                continue;
+            }
 
-        printf("Please enter username: ");
-        scanf("%s", username);
+            printf("Enter Username: ");
+            scanf("%49s", username);
 
-        printf("Please enter password: ");
-        scanf("%s", password);
+            printf("Enter Password: ");
+            scanf("%39s", password);
 
-        if (strcmp(username, reg_username) == 0 && strcmp(password, reg_password) == 0) {
-            printf("Login successful. Welcome, %s\n", username);
-            Menu();
-        } else {
-            printf("Login failed for user - %s\n", username);
-            Login();  // retry login
+            if (strcmp(username, reg_username) == 0 &&
+                strcmp(password, reg_password) == 0) {
+                printf("\nLogin Successful. Welcome %s!\n", reg_name);
+                Menu();
+            } else {
+                printf("Invalid Username or Password!\n");
+            }
         }
-    } else if (choice == 3) {
-        printf("Exiting program. Goodbye!\n");
-        return;
-    } else {
-        printf("Invalid choice! Try again.\n");
-        Login();
+        else if (choice == 3) {
+            printf("Thank you! Goodbye.\n");
+            break;
+        }
+        else {
+            printf("Invalid choice!\n");
+        }
     }
 }
 
-/* Cancel Ticket */
-void CancelTicket() {
-    int inputbusnumber, numberofseats, found = 0;
 
-    printf("Enter Bus Number: ");
-    scanf("%d", &inputbusnumber);
 
-    for (int i = 0; i < 3; i++) {
-        if (BusNumber[i] == inputbusnumber) {
-            found = 1;
-            printf("Enter Number Of Seats to cancel: ");
-            scanf("%d", &numberofseats);
+/* Menu */
+void Menu() {
+    int choice;
 
-            if (AvailableSeats[i] + numberofseats <= TotalSeats[i]) {
-                AvailableSeats[i] += numberofseats;
-                printf("\nCancellation Successful! %d seats canceled on Bus Number %d\n", numberofseats, inputbusnumber);
-            } else {
-                printf("\nError - Number of cancel seats exceeds total seats.\n");
-            }
-            break;
+    while (1) {
+        printf("\n=== USER MENU ===");
+        printf("\n1. Book Ticket");
+        printf("\n2. Cancel Ticket");
+        printf("\n3. Check Bus Details");
+        printf("\n4. Logout");
+        printf("\nEnter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: BookTicket(); break;
+            case 2: CancelTicket(); break;
+            case 3: CheckBusDetails(); break;
+            case 4: return;
+            default: printf("Invalid choice!\n");
         }
-    }
-
-    if (!found) {
-        printf("\nPlease Enter correct Bus Number!\n");
-    }
-}
-
-/* Book Ticket */
-void BookTicket() {
-    int inputbusnumber, numberofseats, found = 0;
-
-    printf("Enter Bus Number: ");
-    scanf("%d", &inputbusnumber);
-
-    for (int i = 0; i < 3; i++) {
-        if (BusNumber[i] == inputbusnumber) {
-            found = 1;
-            printf("Enter Number of seats: ");
-            scanf("%d", &numberofseats);
-
-            if (numberofseats <= AvailableSeats[i]) {
-                AvailableSeats[i] -= numberofseats;
-                printf("\nBooking Successful! %d seats booked on Bus Number %d\n", numberofseats, inputbusnumber);
-            } else {
-                printf("\nError - Not enough available seats.\n");
-            }
-            break;
-        }
-    }
-
-    if (!found) {
-        printf("\nPlease enter correct bus number.\n");
     }
 }
 
 /* Check Bus Details */
 void CheckBusDetails() {
-    int inputbusnumber, found = 0;
+    int bus, found = 0;
 
-    printf("Please Enter Bus Number: ");
-    scanf("%d", &inputbusnumber);
+    printf("Enter Bus Number: ");
+    scanf("%d", &bus);
 
     for (int i = 0; i < 3; i++) {
-        if (BusNumber[i] == inputbusnumber) {
+        if (BusNumber[i] == bus) {
             found = 1;
             printf("\nBus Number: %d", BusNumber[i]);
-            printf("\nSource City: %s", SourceCity[i]);
-            printf("\nDestination City: %s", DestinationCity[i]);
+            printf("\nFrom: %s", SourceCity[i]);
+            printf("\nTo: %s", DestinationCity[i]);
             printf("\nTotal Seats: %d", TotalSeats[i]);
             printf("\nAvailable Seats: %d", AvailableSeats[i]);
             printf("\nFare: %.2f\n", Fare[i]);
@@ -167,46 +134,92 @@ void CheckBusDetails() {
         }
     }
 
-    if (!found) {
-        printf("\nThis Bus is not Available!\n");
-    }
+    if (!found)
+        printf("Bus not found!\n");
 }
 
-/* User Menu */
-void Menu() {
-    int choice;
+/* Book Ticket with Payment Options */
+void BookTicket() {
+    int bus, seats, found = 0;
+    int paymentChoice;
+    float total;
 
-    printf("\n\n=== User Menu ===");
-    printf("\n1. Book a Ticket");
-    printf("\n2. Cancel a Ticket");
-    printf("\n3. Check Bus Status");
-    printf("\n4. Logout");
-    printf("\nEnter your choice: ");
-    scanf("%d", &choice);
+    printf("Enter Bus Number: ");
+    scanf("%d", &bus);
 
-    switch (choice) {
-        case 1:
-            BookTicket();
-            Menu();
+    for (int i = 0; i < 3; i++) {
+        if (BusNumber[i] == bus) {
+            found = 1;
+
+            printf("Enter Seats: ");
+            scanf("%d", &seats);
+
+            if (seats > 0 && seats <= AvailableSeats[i]) {
+
+                total = seats * Fare[i];
+
+                printf("\nFare per seat: %.2f", Fare[i]);
+                printf("\nTotal Fare: %.2f\n", total);
+
+                /* Payment Options */
+                printf("\nSelect Payment Method:");
+                printf("\n1. PhonePe");
+                printf("\n2. Google Pay");
+                printf("\n3. UPI");
+                printf("\nEnter choice: ");
+                scanf("%d", &paymentChoice);
+
+                if (paymentChoice >= 1 && paymentChoice <= 3) {
+
+                    printf("\nPayment Successful!\n");
+
+                    AvailableSeats[i] -= seats;
+
+                    printf("\n--- BOOKING CONFIRMED ---");
+                    printf("\nBus Number: %d", bus);
+                    printf("\nSeats Booked: %d", seats);
+                    printf("\nAmount Paid: %.2f\n", total);
+
+                } else {
+                    printf("\nInvalid Payment Option! Booking Failed.\n");
+                }
+
+            } else {
+                printf("\nNot enough seats available!\n");
+            }
             break;
-
-        case 2:
-            CancelTicket();
-            Menu();
-            break;
-
-        case 3:
-            CheckBusDetails();
-            Menu();
-            break;
-
-        case 4:
-            Login();
-            break;
-
-        default:
-            printf("Invalid choice! Try again.\n");
-            Menu();
-            break;
+        }
     }
+
+    if (!found)
+        printf("\nInvalid Bus Number!\n");
+}
+
+
+/* Cancel Ticket */
+void CancelTicket() {
+    int bus, seats, found = 0;
+
+    printf("Enter Bus Number: ");
+    scanf("%d", &bus);
+
+    for (int i = 0; i < 3; i++) {
+        if (BusNumber[i] == bus) {
+            found = 1;
+
+            printf("Enter Seats to Cancel: ");
+            scanf("%d", &seats);
+
+            if (seats > 0 && AvailableSeats[i] + seats <= TotalSeats[i]) {
+                AvailableSeats[i] += seats;
+                printf("Ticket Cancelled Successfully!\n");
+            } else {
+                printf("Invalid seat count!\n");
+            }
+            break;
+        }
+    }
+
+    if (!found)
+        printf("Invalid Bus Number!\n");
 }
